@@ -2,9 +2,7 @@ package com.nicmsaraiva.api.users;
 
 import com.nicmsaraiva.api.base.BaseTest;
 import com.nicmsaraiva.api.utils.JsonBuilder;
-import io.restassured.http.ContentType;
 import org.apache.http.HttpStatus;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -16,13 +14,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
 public class UpdateUserTest extends BaseTest {
-
-    private static String token;
-
-    @BeforeAll
-    static void auth() throws Exception {
-        token = getAuthToken();
-    }
 
     @Test
     @DisplayName("PUT /usuarios/{id} - should update user and return 200")
@@ -37,8 +28,7 @@ public class UpdateUserTest extends BaseTest {
                 .build();
 
         given()
-                .contentType(ContentType.JSON)
-                .auth().oauth2(token)
+                .spec(requestSpec)
                 .body(requestBody)
                 .when()
                 .put(USERS.getPath() + "/" + userId)
@@ -58,8 +48,7 @@ public class UpdateUserTest extends BaseTest {
                 .build();
 
         given()
-                .contentType(ContentType.JSON)
-                .auth().oauth2(token)
+                .spec(requestSpec)
                 .body(requestBody)
                 .when()
                 .put(USERS.getPath() + "/id-inexistente")
@@ -75,8 +64,7 @@ public class UpdateUserTest extends BaseTest {
         String existingEmail = generateEmail();
 
         given()
-                .contentType(ContentType.JSON)
-                .auth().oauth2(token)
+                .spec(requestSpec)
                 .body(JsonBuilder.from("/update-user.json")
                         .with("nome", "Nicolas")
                         .with("email", existingEmail)
@@ -91,8 +79,7 @@ public class UpdateUserTest extends BaseTest {
         String userId = createUser();
 
         given()
-                .contentType(ContentType.JSON)
-                .auth().oauth2(token)
+                .spec(requestSpec)
                 .body(JsonBuilder.from("/update-user.json")
                         .with("nome", "Nicolas")
                         .with("email", existingEmail)
@@ -119,8 +106,7 @@ public class UpdateUserTest extends BaseTest {
                 .build();
 
         given()
-                .contentType(ContentType.JSON)
-                .auth().oauth2(token)
+                .spec(requestSpec)
                 .body(requestBody)
                 .when()
                 .put(USERS.getPath() + "/" + userId)
@@ -142,8 +128,7 @@ public class UpdateUserTest extends BaseTest {
                 .build();
 
         given()
-                .contentType(ContentType.JSON)
-                .auth().oauth2(token)
+                .spec(requestSpec)
                 .body(requestBody)
                 .when()
                 .put(USERS.getPath() + "/" + userId)
@@ -165,8 +150,7 @@ public class UpdateUserTest extends BaseTest {
                 .build();
 
         given()
-                .contentType(ContentType.JSON)
-                .auth().oauth2(token)
+                .spec(requestSpec)
                 .body(requestBody)
                 .when()
                 .put(USERS.getPath() + "/" + userId)

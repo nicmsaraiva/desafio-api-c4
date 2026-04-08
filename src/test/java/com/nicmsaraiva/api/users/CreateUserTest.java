@@ -2,9 +2,7 @@ package com.nicmsaraiva.api.users;
 
 import com.nicmsaraiva.api.base.BaseTest;
 import com.nicmsaraiva.api.utils.JsonBuilder;
-import io.restassured.http.ContentType;
 import org.apache.http.HttpStatus;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -15,13 +13,6 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
 public class CreateUserTest extends BaseTest {
-
-    private static String token;
-
-    @BeforeAll
-    static void auth() throws Exception {
-        token = getAuthToken();
-    }
 
     @Test
     @DisplayName("POST /usuarios - should create user and return 201")
@@ -34,8 +25,7 @@ public class CreateUserTest extends BaseTest {
                 .build();
 
         given()
-                .contentType(ContentType.JSON)
-                .auth().oauth2(token)
+                .spec(requestSpec)
                 .body(requestBody)
                 .when()
                 .post(USERS.getPath())
@@ -55,8 +45,7 @@ public class CreateUserTest extends BaseTest {
                 .build();
 
         given()
-                .contentType(ContentType.JSON)
-                .auth().oauth2(token)
+                .spec(requestSpec)
                 .body(requestBody)
                 .when()
                 .post(USERS.getPath())
@@ -76,8 +65,7 @@ public class CreateUserTest extends BaseTest {
                 .build();
 
         given()
-                .contentType(ContentType.JSON)
-                .auth().oauth2(token)
+                .spec(requestSpec)
                 .body(requestBody)
                 .when()
                 .post(USERS.getPath())
@@ -97,8 +85,7 @@ public class CreateUserTest extends BaseTest {
                 .build();
 
         given()
-                .contentType(ContentType.JSON)
-                .auth().oauth2(token)
+                .spec(requestSpec)
                 .body(requestBody)
                 .when()
                 .post(USERS.getPath())
@@ -118,8 +105,7 @@ public class CreateUserTest extends BaseTest {
                 .build();
 
         given()
-                .contentType(ContentType.JSON)
-                .auth().oauth2(token)
+                .spec(requestSpec)
                 .body(requestBody)
                 .when()
                 .post(USERS.getPath())
@@ -139,8 +125,7 @@ public class CreateUserTest extends BaseTest {
                 .build();
 
         given()
-                .contentType(ContentType.JSON)
-                .auth().oauth2(token)
+                .spec(requestSpec)
                 .body(requestBody)
                 .when()
                 .post(USERS.getPath())
@@ -160,8 +145,7 @@ public class CreateUserTest extends BaseTest {
                 .build();
 
         given()
-                .contentType(ContentType.JSON)
-                .auth().oauth2(token)
+                .spec(requestSpec)
                 .body(requestBody)
                 .when()
                 .post(USERS.getPath())
@@ -181,8 +165,7 @@ public class CreateUserTest extends BaseTest {
                 .build();
 
         given()
-                .contentType(ContentType.JSON)
-                .auth().oauth2(token)
+                .spec(requestSpec)
                 .body(requestBody)
                 .when()
                 .post(USERS.getPath())
@@ -202,8 +185,7 @@ public class CreateUserTest extends BaseTest {
                 .build();
 
         given()
-                .contentType(ContentType.JSON)
-                .auth().oauth2(token)
+                .spec(requestSpec)
                 .body(requestBody)
                 .when()
                 .post(USERS.getPath())
@@ -223,8 +205,7 @@ public class CreateUserTest extends BaseTest {
                 .build();
 
         given()
-                .contentType(ContentType.JSON)
-                .auth().oauth2(token)
+                .spec(requestSpec)
                 .body(requestBody)
                 .when()
                 .post(USERS.getPath())

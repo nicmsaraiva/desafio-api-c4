@@ -1,32 +1,23 @@
 package com.nicmsaraiva.api.users;
 
 import com.nicmsaraiva.api.base.BaseTest;
-import com.nicmsaraiva.api.utils.TestDataGenerator;
-import io.restassured.http.ContentType;
 import org.apache.http.HttpStatus;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static com.nicmsaraiva.api.utils.TestDataGenerator.generateAlphanumeric;
+import static com.nicmsaraiva.api.utils.TestDataGenerator.generateEmail;
 import static com.nicmsaraiva.enums.Endpoints.USERS;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
 public class GetUserTest extends BaseTest {
 
-    private static String token;
-
-    @BeforeAll
-    static void auth() throws Exception {
-        token = getAuthToken();
-    }
-
     @Test
     @DisplayName("GET /usuarios - should return all users with status 200")
     void shouldReturnAllUsers() {
         given()
-                .contentType(ContentType.JSON)
-                .auth().oauth2(token)
+                .spec(requestSpec)
                 .when()
                 .get(USERS.getPath())
                 .then()
@@ -44,8 +35,7 @@ public class GetUserTest extends BaseTest {
         createUser("Nick");
 
         given()
-                .contentType(ContentType.JSON)
-                .auth().oauth2(token)
+                .spec(requestSpec)
                 .queryParam("nome", "Nick")
                 .when()
                 .get(USERS.getPath())
@@ -58,12 +48,11 @@ public class GetUserTest extends BaseTest {
     @Test
     @DisplayName("GET /usuarios - should return users filtered by email")
     void shouldReturnUsersFilteredByEmail() throws Exception {
-        String email = TestDataGenerator.generateEmail();
+        String email = generateEmail();
         createUser("Nick", email);
 
         given()
-                .contentType(ContentType.JSON)
-                .auth().oauth2(token)
+                .spec(requestSpec)
                 .queryParam("email", email)
                 .when()
                 .get(USERS.getPath())
@@ -79,8 +68,7 @@ public class GetUserTest extends BaseTest {
         createUser();
 
         given()
-                .contentType(ContentType.JSON)
-                .auth().oauth2(token)
+                .spec(requestSpec)
                 .queryParam("administrador", "true")
                 .when()
                 .get(USERS.getPath())
@@ -93,9 +81,8 @@ public class GetUserTest extends BaseTest {
     @DisplayName("GET /usuarios - should return empty list when no users match")
     void shouldReturnEmptyListWhenNoUsersMatch() {
         given()
-                .contentType(ContentType.JSON)
-                .auth().oauth2(token)
-                .queryParam("nome", TestDataGenerator.generateAlphanumeric(10))
+                .spec(requestSpec)
+                .queryParam("nome", generateAlphanumeric(10))
                 .when()
                 .get(USERS.getPath())
                 .then()
@@ -110,8 +97,7 @@ public class GetUserTest extends BaseTest {
         String userId = createUser();
 
         given()
-                .contentType(ContentType.JSON)
-                .auth().oauth2(token)
+                .spec(requestSpec)
                 .when()
                 .get(USERS.getPath() + "/" + userId)
                 .then()
@@ -126,10 +112,9 @@ public class GetUserTest extends BaseTest {
     @DisplayName("GET /usuarios/{id} - should return 400 when id does not exist")
     void shouldReturn400WhenIdDoesNotExist() {
         given()
-                .contentType(ContentType.JSON)
-                .auth().oauth2(token)
+                .spec(requestSpec)
                 .when()
-                .get(USERS.getPath() + "/" + TestDataGenerator.generateAlphanumeric(16))
+                .get(USERS.getPath() + "/" + generateAlphanumeric(16))
                 .then()
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
                 .body("message", equalTo("Usuário não encontrado"));
@@ -139,10 +124,9 @@ public class GetUserTest extends BaseTest {
     @DisplayName("GET /usuarios/{id} - should return 400 when id has invalid length")
     void shouldReturn400WhenIdHasInvalidLength() {
         given()
-                .contentType(ContentType.JSON)
-                .auth().oauth2(token)
+                .spec(requestSpec)
                 .when()
-                .get(USERS.getPath() + "/" + TestDataGenerator.generateAlphanumeric(15))
+                .get(USERS.getPath() + "/" + generateAlphanumeric(15))
                 .then()
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
                 .body("id", equalTo("id deve ter exatamente 16 caracteres alfanuméricos"));

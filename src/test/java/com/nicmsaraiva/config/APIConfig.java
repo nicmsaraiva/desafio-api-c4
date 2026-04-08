@@ -5,7 +5,7 @@ import io.restassured.RestAssured;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class ApiConfig {
+public class APIConfig {
 
     private static Properties properties;
 
@@ -18,7 +18,7 @@ public class ApiConfig {
             return properties;
         }
 
-        try (InputStream stream = ApiConfig.class.getResourceAsStream("/config.properties")) {
+        try (InputStream stream = APIConfig.class.getResourceAsStream("/config.properties")) {
             if (stream == null) {
                 throw new RuntimeException("config.properties not found in classpath");
             }

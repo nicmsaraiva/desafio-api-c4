@@ -2,15 +2,19 @@ package com.nicmsaraiva.api.base;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nicmsaraiva.api.utils.JsonBuilder;
-import com.nicmsaraiva.config.ApiConfig;
+import com.nicmsaraiva.config.APIConfig;
 import io.restassured.http.ContentType;
+import io.restassured.specification.RequestSpecification;
 import org.apache.http.HttpStatus;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import static com.nicmsaraiva.api.utils.TestDataGenerator.generateEmail;
@@ -18,13 +22,31 @@ import static com.nicmsaraiva.api.utils.TestDataGenerator.generatePassword;
 import static com.nicmsaraiva.enums.Endpoints.USERS;
 import static io.restassured.RestAssured.given;
 
-public class BaseTest extends ApiConfig {
+public class BaseTest extends APIConfig {
 
     private static String cachedToken;
+    protected static RequestSpecification requestSpec;
+    private final List<String> createdUserIds = new ArrayList<>();
 
     @BeforeAll
-    static void setup() {
-        ApiConfig.configure();
+    static void setup() throws Exception {
+        APIConfig.configure();
+
+        requestSpec = given()
+                .contentType(ContentType.JSON)
+                .auth().oauth2(getAuthToken())
+                .log().ifValidationFails();
+    }
+
+    @AfterEach
+    void cleanup() {
+        createdUserIds.forEach(userId ->
+                given()
+                        .spec(requestSpec)
+                        .when()
+                        .delete(USERS.getPath() + "/" + userId)
+        );
+        createdUserIds.clear();
     }
 
     protected static String getAuthToken() throws Exception {
@@ -32,7 +54,7 @@ public class BaseTest extends ApiConfig {
             return cachedToken;
         }
 
-        Properties props = ApiConfig.loadProperties();
+        Properties props = APIConfig.loadProperties();
         String baseUri = props.getProperty("base.uri");
 
         String body = JsonBuilder.from("/login.json").build();
@@ -55,15 +77,15 @@ public class BaseTest extends ApiConfig {
         return cachedToken;
     }
 
-    protected static String createUser() throws Exception {
+    protected String createUser() throws Exception {
         return createUser("Nicolas", generateEmail());
     }
 
-    protected static String createUser(String name) throws Exception {
+    protected String createUser(String name) throws Exception {
         return createUser(name, generateEmail());
     }
 
-    protected static String createUser(String name, String email) throws Exception {
+    protected String createUser(String name, String email) throws Exception {
         String requestBody = JsonBuilder.from("/create-user.json")
                 .with("nome", name)
                 .with("email", email)
@@ -71,9 +93,8 @@ public class BaseTest extends ApiConfig {
                 .with("administrador", "true")
                 .build();
 
-        return given()
-                .contentType(ContentType.JSON)
-                .auth().oauth2(getAuthToken())
+        String userId = given()
+                .spec(requestSpec)
                 .body(requestBody)
                 .when()
                 .post(USERS.getPath())
@@ -81,5 +102,8 @@ public class BaseTest extends ApiConfig {
                 .statusCode(HttpStatus.SC_CREATED)
                 .extract()
                 .path("_id");
+
+        createdUserIds.add(userId);
+        return userId;
     }
 }
