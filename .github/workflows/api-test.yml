@@ -43,7 +43,9 @@ jobs:
 
       - name: Generate Surefire report
         if: always()
-        run: mvn surefire-report:report site -DgenerateReports=false
+        run: |
+          mvn surefire-report:report
+          mvn site -DgenerateReports=false
 
       - name: Upload Surefire report
         if: always()
