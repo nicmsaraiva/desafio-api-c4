@@ -8,8 +8,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static com.nicmsaraiva.api.utils.Generator.generateEmail;
-import static com.nicmsaraiva.api.utils.Generator.generatePassword;
+import static com.nicmsaraiva.api.utils.TestDataGenerator.generateEmail;
+import static com.nicmsaraiva.api.utils.TestDataGenerator.generatePassword;
 import static com.nicmsaraiva.enums.Endpoints.USERS;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
@@ -24,17 +24,16 @@ public class CreateUserTest extends BaseTest {
     }
 
     @Test
-    @DisplayName("Create user with success, then return status 200 - Created")
-    public void createUserTestWithSuccess_thenReturnStatus200() throws Exception {
-        String requestBody =
-                JsonBuilder.from("/create-user.json")
-                        .with("nome", "Nicolas")
-                        .with("email", generateEmail())
-                        .with("password", generatePassword())
-                        .with("administrador", "true")
-                        .build();
+    @DisplayName("POST /usuarios - should create user and return 201")
+    void shouldCreateUserSuccessfully() throws Exception {
+        String requestBody = JsonBuilder.from("/create-user.json")
+                .with("nome", "Nicolas")
+                .with("email", generateEmail())
+                .with("password", generatePassword())
+                .with("administrador", "true")
+                .build();
+
         given()
-                .log().all()
                 .contentType(ContentType.JSON)
                 .auth().oauth2(token)
                 .body(requestBody)
@@ -46,8 +45,8 @@ public class CreateUserTest extends BaseTest {
     }
 
     @Test
-    @DisplayName("Create user without email, then return status 400 - Bad Request")
-    void createUserWithoutEmail_thenReturnStatus400() throws Exception {
+    @DisplayName("POST /usuarios - should return 400 when email is missing")
+    void shouldReturn400WhenEmailIsMissing() throws Exception {
         String requestBody = JsonBuilder.from("/create-user.json")
                 .with("nome", "Nicolas")
                 .with("password", generatePassword())
@@ -67,8 +66,8 @@ public class CreateUserTest extends BaseTest {
     }
 
     @Test
-    @DisplayName("Create user with invalid email, then return status 400 - Bad Request")
-    void createUserWithInvalidEmail_thenReturnStatus400() throws Exception {
+    @DisplayName("POST /usuarios - should return 400 when email is invalid")
+    void shouldReturn400WhenEmailIsInvalid() throws Exception {
         String requestBody = JsonBuilder.from("/create-user.json")
                 .with("nome", "Nicolas")
                 .with("email", "invalid-email")
@@ -88,8 +87,8 @@ public class CreateUserTest extends BaseTest {
     }
 
     @Test
-    @DisplayName("Create user without password, then return status 400 - Bad Request")
-    void createUserWithoutPassword_thenReturnStatus400() throws Exception {
+    @DisplayName("POST /usuarios - should return 400 when password is missing")
+    void shouldReturn400WhenPasswordIsMissing() throws Exception {
         String requestBody = JsonBuilder.from("/create-user.json")
                 .with("nome", "Nicolas")
                 .with("email", generateEmail())
@@ -109,8 +108,8 @@ public class CreateUserTest extends BaseTest {
     }
 
     @Test
-    @DisplayName("Create user without name, then return status 400 - Bad Request")
-    void createUserWithoutName_thenReturnStatus400() throws Exception {
+    @DisplayName("POST /usuarios - should return 400 when name is missing")
+    void shouldReturn400WhenNameIsMissing() throws Exception {
         String requestBody = JsonBuilder.from("/create-user.json")
                 .with("email", generateEmail())
                 .with("password", generatePassword())
@@ -130,8 +129,8 @@ public class CreateUserTest extends BaseTest {
     }
 
     @Test
-    @DisplayName("Create user without name, then return status 400 - Bad Request")
-    void createUserWithoutAdministrador_thenReturnStatus400() throws Exception {
+    @DisplayName("POST /usuarios - should return 400 when administrador is missing")
+    void shouldReturn400WhenAdministradorIsMissing() throws Exception {
         String requestBody = JsonBuilder.from("/create-user.json")
                 .with("nome", "Nicolas")
                 .with("email", generateEmail())
@@ -151,8 +150,8 @@ public class CreateUserTest extends BaseTest {
     }
 
     @Test
-    @DisplayName("Create user with integer name, then return status 400 - Bad Request")
-    void createUserWithIntegerName_thenReturnStatus400() throws Exception {
+    @DisplayName("POST /usuarios - should return 400 when name is integer")
+    void shouldReturn400WhenNameIsInteger() throws Exception {
         String requestBody = JsonBuilder.from("/create-user.json")
                 .with("nome", 123)
                 .with("email", generateEmail())
@@ -172,8 +171,8 @@ public class CreateUserTest extends BaseTest {
     }
 
     @Test
-    @DisplayName("Create user with integer email, then return status 400 - Bad Request")
-    void createUserWithIntegerEmail_thenReturnStatus400() throws Exception {
+    @DisplayName("POST /usuarios - should return 400 when email is integer")
+    void shouldReturn400WhenEmailIsInteger() throws Exception {
         String requestBody = JsonBuilder.from("/create-user.json")
                 .with("nome", "Nicolas")
                 .with("email", 123)
@@ -193,8 +192,8 @@ public class CreateUserTest extends BaseTest {
     }
 
     @Test
-    @DisplayName("Create user with integer password, then return status 400 - Bad Request")
-    void createUserWithIntegerPassword_thenReturnStatus400() throws Exception {
+    @DisplayName("POST /usuarios - should return 400 when password is integer")
+    void shouldReturn400WhenPasswordIsInteger() throws Exception {
         String requestBody = JsonBuilder.from("/create-user.json")
                 .with("nome", "Nicolas")
                 .with("email", generateEmail())
@@ -214,8 +213,8 @@ public class CreateUserTest extends BaseTest {
     }
 
     @Test
-    @DisplayName("Create user with integer administrador, then return status 400 - Bad Request")
-    void createUserWithIntegerAdministrador_thenReturnStatus400() throws Exception {
+    @DisplayName("POST /usuarios - should return 400 when administrador is integer")
+    void shouldReturn400WhenAdministradorIsInteger() throws Exception {
         String requestBody = JsonBuilder.from("/create-user.json")
                 .with("nome", "Nicolas")
                 .with("email", generateEmail())

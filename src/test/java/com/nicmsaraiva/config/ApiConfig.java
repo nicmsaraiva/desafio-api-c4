@@ -7,19 +7,28 @@ import java.util.Properties;
 
 public class ApiConfig {
 
+    private static Properties properties;
+
     public static void configure() {
-        Properties props = loadProperties();
-        RestAssured.baseURI = props.getProperty("base.uri");
+        RestAssured.baseURI = loadProperties().getProperty("base.uri");
     }
 
     public static Properties loadProperties() {
-        try {
-            Properties props = new Properties();
-            InputStream stream = ApiConfig.class.getResourceAsStream("/config.properties");
-            props.load(stream);
-            return props;
+        if (properties != null) {
+            return properties;
+        }
+
+        try (InputStream stream = ApiConfig.class.getResourceAsStream("/config.properties")) {
+            if (stream == null) {
+                throw new RuntimeException("config.properties not found in classpath");
+            }
+            properties = new Properties();
+            properties.load(stream);
+            return properties;
+        } catch (RuntimeException ex) {
+            throw ex;
         } catch (Exception ex) {
-            throw new RuntimeException("Fail to load config.properties", ex);
+            throw new RuntimeException("Failed to load config.properties", ex);
         }
     }
 }

@@ -21,12 +21,11 @@ public class DeleteUserTest extends BaseTest {
     }
 
     @Test
-    @DisplayName("Delete user with success, then return status 200 - OK")
-    void deleteUserWithSuccess_thenReturnStatus200() throws Exception {
+    @DisplayName("DELETE /usuarios - should delete user and return 200")
+    void shouldDeleteUserSuccessfully() throws Exception {
         String userId = createUser();
 
         given()
-                .log().all()
                 .contentType(ContentType.JSON)
                 .auth().oauth2(token)
                 .when()
@@ -37,10 +36,9 @@ public class DeleteUserTest extends BaseTest {
     }
 
     @Test
-    @DisplayName("Delete user with invalid id, then return status 400 - Bad Request")
-    void deleteUserWithInvalidId_thenReturnStatus400() {
+    @DisplayName("DELETE /usuarios - should return 200 with no record deleted when id is invalid")
+    void shouldReturn200WithNoRecordWhenIdIsInvalid() {
         given()
-                .log().all()
                 .contentType(ContentType.JSON)
                 .auth().oauth2(token)
                 .when()
@@ -51,13 +49,11 @@ public class DeleteUserTest extends BaseTest {
     }
 
     @Test
-    @DisplayName("Delete user already deleted, then return status 400 - Bad Request")
-    void deleteUserAlreadyDeleted_thenReturnStatus400() throws Exception {
+    @DisplayName("DELETE /usuarios - should return 200 with no record deleted when user is already deleted")
+    void shouldReturn200WithNoRecordWhenUserIsAlreadyDeleted() throws Exception {
         String userId = createUser();
 
-        // First delete - user exists and is deleted successfully
         given()
-                .log().all()
                 .contentType(ContentType.JSON)
                 .auth().oauth2(token)
                 .when()
@@ -66,14 +62,12 @@ public class DeleteUserTest extends BaseTest {
                 .statusCode(HttpStatus.SC_OK)
                 .body("message", equalTo("Registro excluído com sucesso"));
 
-        // Second delete - user does not exist anymore
         given()
-                .log().all()
                 .contentType(ContentType.JSON)
                 .auth().oauth2(token)
                 .when()
                 .delete(USERS.getPath() + "/" + userId)
-                .then().log().all()
+                .then()
                 .statusCode(HttpStatus.SC_OK)
                 .body("message", equalTo("Nenhum registro excluído"));
     }

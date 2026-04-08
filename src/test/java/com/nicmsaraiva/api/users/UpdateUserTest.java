@@ -8,8 +8,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static com.nicmsaraiva.api.utils.Generator.generateEmail;
-import static com.nicmsaraiva.api.utils.Generator.generatePassword;
+import static com.nicmsaraiva.api.utils.TestDataGenerator.generateEmail;
+import static com.nicmsaraiva.api.utils.TestDataGenerator.generatePassword;
 import static com.nicmsaraiva.enums.Endpoints.USERS;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
@@ -25,8 +25,8 @@ public class UpdateUserTest extends BaseTest {
     }
 
     @Test
-    @DisplayName("Update user with success, then return status 200 - OK")
-    void updateUserWithSuccess_thenReturnStatus200() throws Exception {
+    @DisplayName("PUT /usuarios/{id} - should update user and return 200")
+    void shouldUpdateUserSuccessfully() throws Exception {
         String userId = createUser();
 
         String requestBody = JsonBuilder.from("/update-user.json")
@@ -48,8 +48,8 @@ public class UpdateUserTest extends BaseTest {
     }
 
     @Test
-    @DisplayName("Update user with non-existent id creates new user, then return status 201 - Created")
-    void updateUserWithNonExistentId_thenReturnStatus201() throws Exception {
+    @DisplayName("PUT /usuarios/{id} - should create user and return 201 when id does not exist")
+    void shouldCreateUserWhenIdDoesNotExist() throws Exception {
         String requestBody = JsonBuilder.from("/update-user.json")
                 .with("nome", "Nicolas New")
                 .with("email", generateEmail())
@@ -70,8 +70,8 @@ public class UpdateUserTest extends BaseTest {
     }
 
     @Test
-    @DisplayName("Update user with duplicate email, then return status 400 - Bad Request")
-    void updateUserWithDuplicateEmail_thenReturnStatus400() throws Exception {
+    @DisplayName("PUT /usuarios/{id} - should return 400 when email is already in use")
+    void shouldReturn400WhenEmailIsAlreadyInUse() throws Exception {
         String existingEmail = generateEmail();
 
         given()
@@ -107,8 +107,8 @@ public class UpdateUserTest extends BaseTest {
     }
 
     @Test
-    @DisplayName("Update user without email, then return status 400 - Bad Request")
-    void updateUserWithoutEmail_thenReturnStatus400() throws Exception {
+    @DisplayName("PUT /usuarios/{id} - should return 400 when email is missing")
+    void shouldReturn400WhenEmailIsMissing() throws Exception {
         String userId = createUser();
 
         String requestBody = JsonBuilder.from("/update-user.json")
@@ -130,8 +130,8 @@ public class UpdateUserTest extends BaseTest {
     }
 
     @Test
-    @DisplayName("Update user without name, then return status 400 - Bad Request")
-    void updateUserWithoutName_thenReturnStatus400() throws Exception {
+    @DisplayName("PUT /usuarios/{id} - should return 400 when name is missing")
+    void shouldReturn400WhenNameIsMissing() throws Exception {
         String userId = createUser();
 
         String requestBody = JsonBuilder.from("/update-user.json")
@@ -153,8 +153,8 @@ public class UpdateUserTest extends BaseTest {
     }
 
     @Test
-    @DisplayName("Update user without password, then return status 400 - Bad Request")
-    void updateUserWithoutPassword_thenReturnStatus400() throws Exception {
+    @DisplayName("PUT /usuarios/{id} - should return 400 when password is missing")
+    void shouldReturn400WhenPasswordIsMissing() throws Exception {
         String userId = createUser();
 
         String requestBody = JsonBuilder.from("/update-user.json")

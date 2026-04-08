@@ -7,10 +7,10 @@ import java.io.File;
 
 public class JsonBuilder {
 
+    private static final ObjectMapper mapper = new ObjectMapper();
     private final ObjectNode node;
 
     private JsonBuilder(String path) throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
         File file = new File("src/test/resources/payloads" + path);
         this.node = (ObjectNode) mapper.readTree(file);
     }
@@ -20,7 +20,6 @@ public class JsonBuilder {
     }
 
     public JsonBuilder with(String field, Object value) {
-        ObjectMapper mapper = new ObjectMapper();
         this.node.set(field, mapper.valueToTree(value));
         return this;
     }

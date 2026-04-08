@@ -13,12 +13,14 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Properties;
 
-import static com.nicmsaraiva.api.utils.Generator.generateEmail;
-import static com.nicmsaraiva.api.utils.Generator.generatePassword;
+import static com.nicmsaraiva.api.utils.TestDataGenerator.generateEmail;
+import static com.nicmsaraiva.api.utils.TestDataGenerator.generatePassword;
 import static com.nicmsaraiva.enums.Endpoints.USERS;
 import static io.restassured.RestAssured.given;
 
 public class BaseTest extends ApiConfig {
+
+    private static String cachedToken;
 
     @BeforeAll
     static void setup() {
@@ -26,6 +28,10 @@ public class BaseTest extends ApiConfig {
     }
 
     protected static String getAuthToken() throws Exception {
+        if (cachedToken != null) {
+            return cachedToken;
+        }
+
         Properties props = ApiConfig.loadProperties();
         String baseUri = props.getProperty("base.uri");
 
@@ -41,50 +47,20 @@ public class BaseTest extends ApiConfig {
         HttpResponse<String> response = client
                 .send(request, HttpResponse.BodyHandlers.ofString());
 
-        return new ObjectMapper()
+        cachedToken = new ObjectMapper()
                 .readTree(response.body())
                 .get("authorization")
                 .asText();
+
+        return cachedToken;
     }
 
     protected static String createUser() throws Exception {
-        String requestBody = JsonBuilder.from("/create-user.json")
-                .with("nome", "Nicolas")
-                .with("email", generateEmail())
-                .with("password", generatePassword())
-                .with("administrador", "true")
-                .build();
-
-        return given()
-                .contentType(ContentType.JSON)
-                .auth().oauth2(getAuthToken())
-                .body(requestBody)
-                .when()
-                .post(USERS.getPath())
-                .then()
-                .statusCode(HttpStatus.SC_CREATED)
-                .extract()
-                .path("_id");
+        return createUser("Nicolas", generateEmail());
     }
 
     protected static String createUser(String name) throws Exception {
-        String requestBody = JsonBuilder.from("/create-user.json")
-                .with("nome", name)
-                .with("email", generateEmail())
-                .with("password", generatePassword())
-                .with("administrador", "true")
-                .build();
-
-        return given()
-                .contentType(ContentType.JSON)
-                .auth().oauth2(getAuthToken())
-                .body(requestBody)
-                .when()
-                .post(USERS.getPath())
-                .then()
-                .statusCode(HttpStatus.SC_CREATED)
-                .extract()
-                .path("_id");
+        return createUser(name, generateEmail());
     }
 
     protected static String createUser(String name, String email) throws Exception {
