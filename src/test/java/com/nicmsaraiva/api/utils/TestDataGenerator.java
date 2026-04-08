@@ -1,11 +1,13 @@
 package com.nicmsaraiva.api.utils;
 
-import java.util.Random;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.concurrent.ThreadLocalRandom;
 
-public class Generator {
+public class TestDataGenerator {
+
+    private TestDataGenerator() {
+    }
+
     public static String generateEmail() {
         return "nic" + UUID.randomUUID() + "@qa.com.br";
     }
@@ -16,10 +18,12 @@ public class Generator {
 
     public static String generateAlphanumeric(int length) {
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        Random random = new Random();
+        StringBuilder sb = new StringBuilder(length);
 
-        return IntStream.range(0, length)
-                .mapToObj(i -> String.valueOf(characters.charAt(random.nextInt(characters.length()))))
-                .collect(Collectors.joining());
+        for (int i = 0; i < length; i++) {
+            sb.append(characters.charAt(ThreadLocalRandom.current().nextInt(characters.length())));
+        }
+
+        return sb.toString();
     }
 }
