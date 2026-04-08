@@ -30,7 +30,7 @@ src/
     │       ├── enums/
     │       │   └── Endpoints.java
     │       └── utils/
-    │           ├── Generator.java
+    │           ├── TestDataGenerator.java
     │           └── JsonBuilder.java
     └── resources/
         ├── config.properties
