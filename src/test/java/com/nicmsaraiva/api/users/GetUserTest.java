@@ -20,6 +20,7 @@ public class GetUserTest extends BaseTest {
     public static void auth() throws Exception {
         token = BaseTest.getAuthToken();
     }
+
     @Test
     @DisplayName("Get all users with success, then return status 200 - OK")
     void getAllUsersWithSuccess_thenReturnStatus200() {

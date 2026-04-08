@@ -73,7 +73,7 @@ public class UpdateUserTest extends BaseTest {
     @DisplayName("Update user with duplicate email, then return status 400 - Bad Request")
     void updateUserWithDuplicateEmail_thenReturnStatus400() throws Exception {
         String existingEmail = generateEmail();
-        
+
         given()
                 .contentType(ContentType.JSON)
                 .auth().oauth2(token)
@@ -87,7 +87,7 @@ public class UpdateUserTest extends BaseTest {
                 .post(USERS.getPath())
                 .then()
                 .statusCode(HttpStatus.SC_CREATED);
-        
+
         String userId = createUser();
 
         given()

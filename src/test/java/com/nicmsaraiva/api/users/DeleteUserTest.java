@@ -1,15 +1,12 @@
 package com.nicmsaraiva.api.users;
 
 import com.nicmsaraiva.api.base.BaseTest;
-import com.nicmsaraiva.api.utils.JsonBuilder;
 import io.restassured.http.ContentType;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static com.nicmsaraiva.api.utils.Generator.generateEmail;
-import static com.nicmsaraiva.api.utils.Generator.generatePassword;
 import static com.nicmsaraiva.enums.Endpoints.USERS;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;

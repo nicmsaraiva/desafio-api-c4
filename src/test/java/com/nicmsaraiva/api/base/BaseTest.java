@@ -1,11 +1,17 @@
 package com.nicmsaraiva.api.base;
 
-import com.nicmsaraiva.config.ApiConfig;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nicmsaraiva.api.utils.JsonBuilder;
-import com.nicmsaraiva.enums.Endpoints;
+import com.nicmsaraiva.config.ApiConfig;
 import io.restassured.http.ContentType;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.BeforeAll;
+
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.Properties;
 
 import static com.nicmsaraiva.api.utils.Generator.generateEmail;
 import static com.nicmsaraiva.api.utils.Generator.generatePassword;
@@ -20,20 +26,25 @@ public class BaseTest extends ApiConfig {
     }
 
     protected static String getAuthToken() throws Exception {
-        String requestBody = JsonBuilder
-                .from("/login.json")
+        Properties props = ApiConfig.loadProperties();
+        String baseUri = props.getProperty("base.uri");
+
+        String body = JsonBuilder.from("/login.json").build();
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(baseUri + "/login"))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
 
-        return given()
-                .log().all()
-                .contentType(ContentType.JSON)
-                .body(requestBody)
-                .when()
-                .post(Endpoints.LOGIN.getPath())
-                .then()
-                .statusCode(HttpStatus.SC_OK)
-                .extract()
-                .path("authorization");
+        HttpResponse<String> response = client
+                .send(request, HttpResponse.BodyHandlers.ofString());
+
+        return new ObjectMapper()
+                .readTree(response.body())
+                .get("authorization")
+                .asText();
     }
 
     protected static String createUser() throws Exception {
