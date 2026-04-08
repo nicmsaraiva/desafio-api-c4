@@ -193,7 +193,7 @@ After each pipeline execution, go to `Actions` tab → select the run → downlo
 
 ## 🏗️ Architecture Decisions
 
-### `ApiConfig`
+### `APIConfig`
 Centralizes environment configuration by loading `config.properties` (with caching) and setting `RestAssured.baseURI`. Uses try-with-resources for safe stream handling.
 
 ### `BaseTest`
