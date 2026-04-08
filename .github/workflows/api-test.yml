@@ -41,24 +41,9 @@ jobs:
       - name: Run tests
         run: mvn test
 
-      - name: Generate Allure report
+      - name: Generate Surefire report
         if: always()
-        uses: simple-elf/allure-report-action@master
-        with:
-          allure_results: target/allure-results
-          allure_report: allure-report
-
-      - name: Generate Surefire PDF-ready report
-        if: always()
-        run: mvn surefire-report:report site -DgenerateReports=false
-
-      - name: Upload Allure report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: allure-report
-          path: allure-report
-          retention-days: 7
+        run: mvn site -DskipTests
 
       - name: Upload Surefire report
         if: always()
@@ -74,7 +59,6 @@ jobs:
           echo "## Test Results" >> $GITHUB_STEP_SUMMARY
           echo "| Info | Value |" >> $GITHUB_STEP_SUMMARY
           echo "|------|-------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Allure Report | Download artifact \`allure-report\` → open via \`allure open\` |" >> $GITHUB_STEP_SUMMARY
-          echo "| Surefire Report | Download artifact \`surefire-report\` → open \`surefire-report.html\` → Ctrl+P → Save as PDF |" >> $GITHUB_STEP_SUMMARY
+          echo "| Surefire Report | Download artifact \`surefire-report\` → open \`surefire-report.html\` |" >> $GITHUB_STEP_SUMMARY
           echo "| Branch | ${{ github.ref_name }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Commit | ${{ github.sha }} |" >> $GITHUB_STEP_SUMMARY
