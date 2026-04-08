@@ -36,11 +36,7 @@ jobs:
       - name: Create config.properties
         run: |
           mkdir -p src/test/resources
-          cat > src/test/resources/config.properties << EOF
-          base.uri=${{ secrets.BASE_URI }}
-          login.email=${{ secrets.LOGIN_EMAIL }}
-          login.password=${{ secrets.LOGIN_PASSWORD }}
-          EOF
+          echo "base.uri=https://serverest.dev" > src/test/resources/config.properties
 
       - name: Run tests
         run: mvn test
