@@ -158,4 +158,167 @@ public class UpdateUserTest extends BaseTest {
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
                 .body("password", equalTo("password é obrigatório"));
     }
+
+    @Test
+    @DisplayName("PUT /usuarios/{id} - should return 400 when email is invalid")
+    void shouldReturn400WhenEmailIsInvalid() throws Exception {
+        String userId = createUser();
+
+        String requestBody = JsonBuilder.from("/update-user.json")
+                .with("nome", "Nicolas")
+                .with("email", "invalid-email")
+                .with("password", generatePassword())
+                .with("administrador", "true")
+                .build();
+
+        given()
+                .spec(requestSpec)
+                .body(requestBody)
+                .when()
+                .put(USERS.getPath() + "/" + userId)
+                .then()
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .body("email", equalTo("email deve ser um email válido"));
+    }
+
+    @Test
+    @DisplayName("PUT /usuarios/{id} - should return 400 when administrador is missing")
+    void shouldReturn400WhenAdministradorIsMissing() throws Exception {
+        String userId = createUser();
+
+        String requestBody = JsonBuilder.from("/update-user.json")
+                .with("nome", "Nicolas")
+                .with("email", generateEmail())
+                .with("password", generatePassword())
+                .without("administrador")
+                .build();
+
+        given()
+                .spec(requestSpec)
+                .body(requestBody)
+                .when()
+                .put(USERS.getPath() + "/" + userId)
+                .then()
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .body("administrador", equalTo("administrador é obrigatório"));
+    }
+
+    @Test
+    @DisplayName("PUT /usuarios/{id} - should return 400 when name is integer")
+    void shouldReturn400WhenNameIsInteger() throws Exception {
+        String userId = createUser();
+
+        String requestBody = JsonBuilder.from("/update-user.json")
+                .with("nome", 123)
+                .with("email", generateEmail())
+                .with("password", generatePassword())
+                .with("administrador", "true")
+                .build();
+
+        given()
+                .spec(requestSpec)
+                .body(requestBody)
+                .when()
+                .put(USERS.getPath() + "/" + userId)
+                .then()
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .body("nome", equalTo("nome deve ser uma string"));
+    }
+
+    @Test
+    @DisplayName("PUT /usuarios/{id} - should return 400 when email is integer")
+    void shouldReturn400WhenEmailIsInteger() throws Exception {
+        String userId = createUser();
+
+        String requestBody = JsonBuilder.from("/update-user.json")
+                .with("nome", "Nicolas")
+                .with("email", 123)
+                .with("password", generatePassword())
+                .with("administrador", "true")
+                .build();
+
+        given()
+                .spec(requestSpec)
+                .body(requestBody)
+                .when()
+                .put(USERS.getPath() + "/" + userId)
+                .then()
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .body("email", equalTo("email deve ser uma string"));
+    }
+
+    @Test
+    @DisplayName("PUT /usuarios/{id} - should return 400 when password is integer")
+    void shouldReturn400WhenPasswordIsInteger() throws Exception {
+        String userId = createUser();
+
+        String requestBody = JsonBuilder.from("/update-user.json")
+                .with("nome", "Nicolas")
+                .with("email", generateEmail())
+                .with("password", 123)
+                .with("administrador", "true")
+                .build();
+
+        given()
+                .spec(requestSpec)
+                .body(requestBody)
+                .when()
+                .put(USERS.getPath() + "/" + userId)
+                .then()
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .body("password", equalTo("password deve ser uma string"));
+    }
+
+    @Test
+    @DisplayName("PUT /usuarios/{id} - should return 400 when administrador is integer")
+    void shouldReturn400WhenAdministradorIsInteger() throws Exception {
+        String userId = createUser();
+
+        String requestBody = JsonBuilder.from("/update-user.json")
+                .with("nome", "Nicolas")
+                .with("email", generateEmail())
+                .with("password", generatePassword())
+                .with("administrador", 123)
+                .build();
+
+        given()
+                .spec(requestSpec)
+                .body(requestBody)
+                .when()
+                .put(USERS.getPath() + "/" + userId)
+                .then()
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .body("administrador", equalTo("administrador deve ser 'true' ou 'false'"));
+    }
+
+    @Test
+    @DisplayName("PUT /usuarios/{id} - should keep updated data after update")
+    void shouldKeepUpdatedDataAfterUpdate() throws Exception {
+        String userId = createUser();
+        String newEmail = generateEmail();
+
+        String requestBody = JsonBuilder.from("/update-user.json")
+                .with("nome", "Nicolas Updated")
+                .with("email", newEmail)
+                .with("password", generatePassword())
+                .with("administrador", "true")
+                .build();
+
+        given()
+                .spec(requestSpec)
+                .body(requestBody)
+                .when()
+                .put(USERS.getPath() + "/" + userId)
+                .then()
+                .statusCode(HttpStatus.SC_OK);
+
+        given()
+                .spec(requestSpec)
+                .when()
+                .get(USERS.getPath() + "/" + userId)
+                .then()
+                .statusCode(HttpStatus.SC_OK)
+                .body("nome", equalTo("Nicolas Updated"))
+                .body("email", equalTo(newEmail));
+    }
 }

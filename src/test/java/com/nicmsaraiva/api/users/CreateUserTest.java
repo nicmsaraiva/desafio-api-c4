@@ -11,6 +11,7 @@ import static com.nicmsaraiva.api.utils.TestDataGenerator.generatePassword;
 import static com.nicmsaraiva.enums.Endpoints.USERS;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
 
 public class CreateUserTest extends BaseTest {
 
@@ -212,5 +213,132 @@ public class CreateUserTest extends BaseTest {
                 .then()
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
                 .body("administrador", equalTo("administrador deve ser 'true' ou 'false'"));
+    }
+
+    @Test
+    @DisplayName("POST /usuarios - should return 400 when email is already in use")
+    void shouldReturn400WhenEmailIsAlreadyInUse() throws Exception {
+        String email = generateEmail();
+
+        String firstUser = JsonBuilder.from("/create-user.json")
+                .with("nome", "Nicolas")
+                .with("email", email)
+                .with("password", generatePassword())
+                .with("administrador", "true")
+                .build();
+
+        given()
+                .spec(requestSpec)
+                .body(firstUser)
+                .when()
+                .post(USERS.getPath())
+                .then()
+                .statusCode(HttpStatus.SC_CREATED);
+
+        String duplicateUser = JsonBuilder.from("/create-user.json")
+                .with("nome", "Outro Nome")
+                .with("email", email)
+                .with("password", generatePassword())
+                .with("administrador", "true")
+                .build();
+
+        given()
+                .spec(requestSpec)
+                .body(duplicateUser)
+                .when()
+                .post(USERS.getPath())
+                .then()
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .body("message", equalTo("Este email já está sendo usado"));
+    }
+
+    @Test
+    @DisplayName("POST /usuarios - should return created user id")
+    void shouldReturnCreatedUserId() throws Exception {
+        String requestBody = JsonBuilder.from("/create-user.json")
+                .with("nome", "Nicolas")
+                .with("email", generateEmail())
+                .with("password", generatePassword())
+                .with("administrador", "true")
+                .build();
+
+        given()
+                .spec(requestSpec)
+                .body(requestBody)
+                .when()
+                .post(USERS.getPath())
+                .then()
+                .statusCode(HttpStatus.SC_CREATED)
+                .body("message", equalTo("Cadastro realizado com sucesso"))
+                .body("_id", notNullValue());
+    }
+
+    @Test
+    @DisplayName("POST /usuarios - should persist user data after creation")
+    void shouldPersistUserDataAfterCreation() throws Exception {
+        String email = generateEmail();
+
+        String requestBody = JsonBuilder.from("/create-user.json")
+                .with("nome", "Nicolas Persist")
+                .with("email", email)
+                .with("password", generatePassword())
+                .with("administrador", "true")
+                .build();
+
+        String userId = given()
+                .spec(requestSpec)
+                .body(requestBody)
+                .when()
+                .post(USERS.getPath())
+                .then()
+                .statusCode(HttpStatus.SC_CREATED)
+                .extract()
+                .path("_id");
+
+        given()
+                .spec(requestSpec)
+                .when()
+                .get(USERS.getPath() + "/" + userId)
+                .then()
+                .statusCode(HttpStatus.SC_OK)
+                .body("nome", equalTo("Nicolas Persist"))
+                .body("email", equalTo(email))
+                .body("administrador", equalTo("true"));
+    }
+
+    @Test
+    @DisplayName("POST /usuarios - should create user with administrador false")
+    void shouldCreateUserWithAdministradorFalse() throws Exception {
+        String requestBody = JsonBuilder.from("/create-user.json")
+                .with("nome", "Nicolas")
+                .with("email", generateEmail())
+                .with("password", generatePassword())
+                .with("administrador", "false")
+                .build();
+
+        given()
+                .spec(requestSpec)
+                .body(requestBody)
+                .when()
+                .post(USERS.getPath())
+                .then()
+                .statusCode(HttpStatus.SC_CREATED)
+                .body("message", equalTo("Cadastro realizado com sucesso"));
+    }
+
+    @Test
+    @DisplayName("POST /usuarios - should return 400 when body is empty")
+    void shouldReturn400WhenBodyIsEmpty() {
+        given()
+                .spec(requestSpec)
+                .body("{}")
+                .when()
+                .post(USERS.getPath())
+                .then()
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .body("nome", equalTo("nome é obrigatório"))
+                .body("email", equalTo("email é obrigatório"))
+                .body("password", equalTo("password é obrigatório"))
+                .body("administrador", equalTo("administrador é obrigatório"));
     }
 }

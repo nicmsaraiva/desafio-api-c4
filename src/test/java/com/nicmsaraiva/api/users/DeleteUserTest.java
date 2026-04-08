@@ -58,4 +58,38 @@ public class DeleteUserTest extends BaseTest {
                 .statusCode(HttpStatus.SC_OK)
                 .body("message", equalTo("Nenhum registro excluído"));
     }
+
+    @Test
+    @DisplayName("DELETE /usuarios/{id} - should not find user after deletion")
+    void shouldNotFindUserAfterDeletion() throws Exception {
+        String userId = createUser();
+
+        given()
+                .spec(requestSpec)
+                .when()
+                .delete(USERS.getPath() + "/" + userId)
+                .then()
+                .statusCode(HttpStatus.SC_OK)
+                .body("message", equalTo("Registro excluído com sucesso"));
+
+        given()
+                .spec(requestSpec)
+                .when()
+                .get(USERS.getPath() + "/" + userId)
+                .then()
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .body("message", equalTo("Usuário não encontrado"));
+    }
+
+    @Test
+    @DisplayName("DELETE /usuarios/{id} - should return 200 with no record when id has special characters")
+    void shouldReturn200WhenIdHasSpecialCharacters() {
+        given()
+                .spec(requestSpec)
+                .when()
+                .delete(USERS.getPath() + "/@#$%&!")
+                .then()
+                .statusCode(HttpStatus.SC_OK)
+                .body("message", equalTo("Nenhum registro excluído"));
+    }
 }

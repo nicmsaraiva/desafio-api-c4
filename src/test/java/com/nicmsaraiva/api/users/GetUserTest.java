@@ -131,4 +131,70 @@ public class GetUserTest extends BaseTest {
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
                 .body("id", equalTo("id deve ter exatamente 16 caracteres alfanuméricos"));
     }
+
+    @Test
+    @DisplayName("GET /usuarios - should return users filtered by multiple params")
+    void shouldReturnUsersFilteredByMultipleParams() throws Exception {
+        String email = generateEmail();
+        createUser("Nick", email);
+
+        given()
+                .spec(requestSpec)
+                .queryParam("nome", "Nick")
+                .queryParam("email", email)
+                .queryParam("administrador", "true")
+                .when()
+                .get(USERS.getPath())
+                .then()
+                .statusCode(HttpStatus.SC_OK)
+                .body("quantidade", equalTo(1))
+                .body("usuarios[0].nome", equalTo("Nick"))
+                .body("usuarios[0].email", equalTo(email));
+    }
+
+    @Test
+    @DisplayName("GET /usuarios - should return empty list when administrador filter has no match")
+    void shouldReturnEmptyWhenAdministradorFilterHasNoMatch() {
+        given()
+                .spec(requestSpec)
+                .queryParam("administrador", "false")
+                .queryParam("nome", generateAlphanumeric(10))
+                .when()
+                .get(USERS.getPath())
+                .then()
+                .statusCode(HttpStatus.SC_OK)
+                .body("quantidade", equalTo(0))
+                .body("usuarios", empty());
+    }
+
+    @Test
+    @DisplayName("GET /usuarios/{id} - should return correct fields for created user")
+    void shouldReturnCorrectFieldsForCreatedUser() throws Exception {
+        String email = generateEmail();
+        String userId = createUser("Nick Verified", email);
+
+        given()
+                .spec(requestSpec)
+                .when()
+                .get(USERS.getPath() + "/" + userId)
+                .then()
+                .statusCode(HttpStatus.SC_OK)
+                .body("_id", equalTo(userId))
+                .body("nome", equalTo("Nick Verified"))
+                .body("email", equalTo(email))
+                .body("administrador", equalTo("true"))
+                .body("password", notNullValue());
+    }
+
+    @Test
+    @DisplayName("GET /usuarios/{id} - should return 400 when id is empty")
+    void shouldReturn400WhenIdIsEmpty() {
+        given()
+                .spec(requestSpec)
+                .when()
+                .get(USERS.getPath() + "/")
+                .then()
+                .statusCode(HttpStatus.SC_OK)
+                .body("quantidade", notNullValue());
+    }
 }

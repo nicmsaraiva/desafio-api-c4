@@ -98,14 +98,6 @@ Report will be available at `target/site/surefire-report.html`.
 
 ## 🧪 Test Cases
 
-### 🔐 Auth — `LoginTest`
-
-| Test | Description | Expected Status |
-|---|---|---|
-| `shouldLoginSuccessfully` | Login with valid credentials | 200 |
-
----
-
 ### 👤 Users — `CreateUserTest`
 
 | Test | Description | Expected Status |
@@ -120,6 +112,11 @@ Report will be available at `target/site/surefire-report.html`.
 | `shouldReturn400WhenEmailIsInteger` | Create user with integer as email | 400 |
 | `shouldReturn400WhenPasswordIsInteger` | Create user with integer as password | 400 |
 | `shouldReturn400WhenAdministradorIsInteger` | Create user with integer as administrador | 400 |
+| `shouldReturn400WhenEmailIsAlreadyInUse` | Create user with duplicate email | 400 |
+| `shouldReturnCreatedUserId` | Verify response includes generated _id | 201 |
+| `shouldPersistUserDataAfterCreation` | GET after POST confirms data was saved | 200 |
+| `shouldCreateUserWithAdministradorFalse` | Create non-admin user | 201 |
+| `shouldReturn400WhenBodyIsEmpty` | Send empty JSON body | 400 |
 
 ---
 
@@ -131,10 +128,15 @@ Report will be available at `target/site/surefire-report.html`.
 | `shouldReturnUsersFilteredByName` | List users filtered by name | 200 |
 | `shouldReturnUsersFilteredByEmail` | List users filtered by email | 200 |
 | `shouldReturnUsersFilteredByAdministrador` | List users filtered by administrador flag | 200 |
+| `shouldReturnUsersFilteredByMultipleParams` | List users filtered by name, email and administrador | 200 |
+| `shouldReturnEmptyWhenAdministradorFilterHasNoMatch` | Combined filters with no results | 200 |
 | `shouldReturnEmptyListWhenNoUsersMatch` | List users with filter that returns no results | 200 |
 | `shouldReturnUserById` | Get user by valid id | 200 |
+| `shouldReturnCorrectFieldsForCreatedUser` | Verify all fields match created user data | 200 |
 | `shouldReturn400WhenIdDoesNotExist` | Get user by non-existent id | 400 |
 | `shouldReturn400WhenIdHasInvalidLength` | Get user by id with wrong length | 400 |
+| `shouldReturnUserListWhenIdIsEmpty` | GET with empty id returns user list | 200 |
+| `shouldIgnoreUnknownQueryParam` | Unknown query param does not break the request | 200 |
 
 ---
 
@@ -146,8 +148,15 @@ Report will be available at `target/site/surefire-report.html`.
 | `shouldCreateUserWhenIdDoesNotExist` | PUT with non-existent id creates new user | 201 |
 | `shouldReturn400WhenEmailIsAlreadyInUse` | Update user with already used email | 400 |
 | `shouldReturn400WhenEmailIsMissing` | Update user without email field | 400 |
+| `shouldReturn400WhenEmailIsInvalid` | Update user with malformed email | 400 |
 | `shouldReturn400WhenNameIsMissing` | Update user without name field | 400 |
 | `shouldReturn400WhenPasswordIsMissing` | Update user without password field | 400 |
+| `shouldReturn400WhenAdministradorIsMissing` | Update user without administrador field | 400 |
+| `shouldReturn400WhenNameIsInteger` | Update user with integer as name | 400 |
+| `shouldReturn400WhenEmailIsInteger` | Update user with integer as email | 400 |
+| `shouldReturn400WhenPasswordIsInteger` | Update user with integer as password | 400 |
+| `shouldReturn400WhenAdministradorIsInteger` | Update user with integer as administrador | 400 |
+| `shouldKeepUpdatedDataAfterUpdate` | GET after PUT confirms data was updated | 200 |
 
 ---
 
@@ -158,6 +167,8 @@ Report will be available at `target/site/surefire-report.html`.
 | `shouldDeleteUserSuccessfully` | Delete existing user | 200 |
 | `shouldReturn200WithNoRecordWhenIdIsInvalid` | Delete user with non-existent id | 200 |
 | `shouldReturn200WithNoRecordWhenUserIsAlreadyDeleted` | Delete user that was already deleted | 200 |
+| `shouldNotFindUserAfterDeletion` | GET after DELETE confirms user was removed | 400 |
+| `shouldReturn200WhenIdHasSpecialCharacters` | Delete with special characters in id | 200 |
 
 ---
 
