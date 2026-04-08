@@ -39,36 +39,44 @@ public class GetUserTest extends BaseTest {
 
     @Test
     @DisplayName("Get users filtered by name, then return status 200 - OK")
-    void getUsersFilteredByName_thenReturnStatus200() {
+    void getUsersFilteredByName_thenReturnStatus200() throws Exception {
+        createUser("Nick");
+
         given()
                 .contentType(ContentType.JSON)
                 .auth().oauth2(token)
-                .queryParam("nome", "Nicolas Saraiva")
+                .queryParam("nome", "Nick")
                 .when()
                 .get(USERS.getPath())
-                .then().log().all()
+                .then()
                 .statusCode(HttpStatus.SC_OK)
-                .body("usuarios.nome", hasItem("Nicolas Saraiva"));
+                .body("quantidade", greaterThanOrEqualTo(1))
+                .body("usuarios.nome", hasItem("Nick"));
     }
 
     @Test
     @DisplayName("Get users filtered by email, then return status 200 - OK")
-    void getUsersFilteredByEmail_thenReturnStatus200() {
+    void getUsersFilteredByEmail_thenReturnStatus200() throws Exception {
+        String email = Generator.generateEmail();
+        createUser("Nick", email);
+
         given()
                 .contentType(ContentType.JSON)
                 .auth().oauth2(token)
-                .queryParam("email", "nicolas@qa.com.br")
+                .queryParam("email", email)
                 .when()
                 .get(USERS.getPath())
                 .then().log().all()
                 .statusCode(HttpStatus.SC_OK)
                 .body("quantidade", equalTo(1))
-                .body("usuarios[0].nome", equalTo("Nicolas Saraiva"));
+                .body("usuarios[0].nome", equalTo("Nick"));
     }
 
     @Test
     @DisplayName("Get users filtered by administrador, then return status 200 - OK")
-    void getUsersFilteredByAdministrador_thenReturnStatus200() {
+    void getUsersFilteredByAdministrador_thenReturnStatus200() throws Exception {
+        createUser();
+
         given()
                 .contentType(ContentType.JSON)
                 .auth().oauth2(token)
@@ -86,7 +94,7 @@ public class GetUserTest extends BaseTest {
         given()
                 .contentType(ContentType.JSON)
                 .auth().oauth2(token)
-                .queryParam("nome", "usuario-que-nao-existe-xyz")
+                .queryParam("nome", Generator.generateAlphanumeric(10))
                 .when()
                 .get(USERS.getPath())
                 .then()
@@ -97,14 +105,15 @@ public class GetUserTest extends BaseTest {
 
     @Test
     @DisplayName("Get user by id with success, then return status 200 - OK")
-    void getUserByIdWithSuccess_thenReturnStatus200() {
-        String userId = "0qFmNK2jYpUonRkX";
+    void getUserByIdWithSuccess_thenReturnStatus200() throws Exception {
+        String userId = createUser();
+
         given()
                 .contentType(ContentType.JSON)
                 .auth().oauth2(token)
                 .when()
                 .get(USERS.getPath() + "/" + userId)
-                .then().log().all()
+                .then()
                 .statusCode(HttpStatus.SC_OK)
                 .body("_id", equalTo(userId))
                 .body("nome", notNullValue())

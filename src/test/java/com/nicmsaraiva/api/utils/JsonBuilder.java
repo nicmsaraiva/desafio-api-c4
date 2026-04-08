@@ -11,7 +11,7 @@ public class JsonBuilder {
 
     private JsonBuilder(String path) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-        File file = new File("src/test/java/com/nicmsaraiva/resources/json" + path);
+        File file = new File("src/test/resources/payloads" + path);
         this.node = (ObjectNode) mapper.readTree(file);
     }
 

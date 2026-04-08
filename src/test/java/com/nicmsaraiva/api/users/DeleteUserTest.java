@@ -23,27 +23,6 @@ public class DeleteUserTest extends BaseTest {
         token = getAuthToken();
     }
 
-    private static String createUser() throws Exception {
-        String requestBody = JsonBuilder.from("/create-user.json")
-                .with("nome", "Nicolas")
-                .with("email", generateEmail())
-                .with("password", generatePassword())
-                .with("administrador", "true")
-                .build();
-
-        return given()
-                .log().all()
-                .contentType(ContentType.JSON)
-                .auth().oauth2(token)
-                .body(requestBody)
-                .when()
-                .post(USERS.getPath())
-                .then()
-                .statusCode(HttpStatus.SC_CREATED)
-                .extract()
-                .path("_id");
-    }
-
     @Test
     @DisplayName("Delete user with success, then return status 200 - OK")
     void deleteUserWithSuccess_thenReturnStatus200() throws Exception {
